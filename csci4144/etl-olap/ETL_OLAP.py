@@ -291,14 +291,22 @@ def time_quarter_time_year_car_manufacturer_query():
         time_quarter_time_year_car_manufacturer_dict[key] = sum(
             int(row[4]) for row in value)
 
-    print('\n')
-    print('-' * 60)
-    print(f"{'Time_Year-Time_Quarter':^15} {'Car Manufacturer':^20} {'Sales Units':^16}")
-    print('-' * 60)
+    sort_by_car_manufacturer = sorted(
+        time_quarter_time_year_car_manufacturer_dict.items(), key=lambda x: (x[0][2]))
 
-    for key, value in time_quarter_time_year_car_manufacturer_dict.items():
-        time_year_time_quarter = key[0] + "-" + key[1]
-        print(f"{time_year_time_quarter:^23} {key[2]:^15} {value:^20}")
+    for key, value in itertools.groupby(sort_by_car_manufacturer, key=lambda x: (x[0][2])):
+        print('\n')
+        print('-' * 50)
+        print(f"{'Car Manufacturer':>27} - {key}")
+        for k, v in itertools.groupby(value, key=lambda x: (x[0][0])):
+            print('-' * 50)
+            print(f"{'Time_Year':>24} - {k}")
+            print('-' * 50)
+            print(f"{'Time_Quarter':^24}{'Sales_Units':^24}")
+            print('-' * 50)
+
+            for row in v:
+                print(f"{row[0][1]:^24}{row[1]:^24}")
 
 
 '''
