@@ -1,4 +1,3 @@
 .vscode/
 .DS_Store
-./csci4144/*.zip
-./csci4144/*/*.zip
+*.zip
