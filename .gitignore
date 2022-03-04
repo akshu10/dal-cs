@@ -1,3 +1,7 @@
 .vscode/
 .DS_Store
 *.zip
+out*txt
+test.*
+Car_Sales_Data_Set*.csv
+temp.py

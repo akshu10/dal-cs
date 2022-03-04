@@ -356,8 +356,15 @@ def country_time_quarter_time_year_car_manufacturer_query():
     file_data = read_data('Car_Sales_Data_Set_Second_Sorting.csv')
     country_time_quarter_time_year_car_manufacturer_dict = {}
 
-    sort_by_car_manufacturer_time_quarter = sorted(
-        file_data[0], key=lambda x: (x[2], x[3], x[1]))
+    sorting = sorted(file_data[0], key=lambda x: (x[1], x[2], x[3]))
+    # sort_by_car_manufacturer = sorted(
+    #     file_data[0], key=lambda x: (x[3]))
+
+    # sort_by_time_quarter = sorted(
+    #     sort_by_car_manufacturer, key=lambda x: (x[2]))
+
+    # for row in sorting:
+    #     print(row)
 
     for key, value in itertools.groupby(sort_by_car_manufacturer_time_quarter, key=lambda x: (x[0], x[1], x[2], x[3])):
         country_time_quarter_time_year_car_manufacturer_dict[key] = sum(
