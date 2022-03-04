@@ -67,6 +67,8 @@ def aggregate_sales():
 
     print(f"Total Sales Units: {total_sales}")
 
+    print('\n')
+
 
 '''
 Queries the csv file based on the country
@@ -89,6 +91,8 @@ def country_query():
     for key, value in country_dict.items():
         print(f"{key:^15} {value:^15}")
 
+    print('\n')
+
 
 '''
 Queries the csv file based on the time_year
@@ -110,6 +114,8 @@ def time_year_query():
     for key, value in time_year_dict.items():
         print(f"{key:^15} {value:^15}")
 
+    print('\n')
+
 
 '''
 Queries the csv file based on the car_manufacturer
@@ -127,11 +133,13 @@ def car_manufacturer_query():
         manufacturer_dict[key] = sum(int(row[4]) for row in value)
 
     print('\n')
-    print('-' * 40)
-    print(f"{'Car Manufacturer':^15} {'Sales Units':^16}")
-    print('-' * 40)
+    print('-' * 45)
+    print(f"{'Car Manufacturer':>20} {'Sales Units':>20}")
+    print('-' * 45)
     for key, value in manufacturer_dict.items():
-        print(f"{key:^15} {value:^15}")
+        print(f"{key:>15} {value:>20}")
+
+    print('\n')
 
 
 '''
@@ -148,13 +156,15 @@ def time_quarter_time_year_query():
         time_year_time_quarter_dict[key] = sum(int(row[4]) for row in value)
 
     print('\n')
-    print('-' * 40)
-    print(f"{'Time Year-Time Quarter':^15} {'Sales Units':^16}")
-    print('-' * 40)
+    print('-' * 53)
+    print(f"{'Time Year-Time Quarter':>25} {'Sales Units':>21}")
+    print('-' * 53)
 
     for key, value in time_year_time_quarter_dict.items():
         time_year_time_quarter = key[0] + "-" + key[1]
-        print(f"{time_year_time_quarter:^21} {value:^17}")
+        print(f"{time_year_time_quarter:>17} {value:>25}")
+
+    print('\n')
 
 
 '''
@@ -173,13 +183,15 @@ def country_time_year_query():
     for key, value in itertools.groupby(country_time_year_dict.items(), key=lambda x: (x[0][0])):
         print('\n')
         print('-' * 40)
-        print(f"{key:^35}")
+        print(f"\033[1m{'Country':>16} - {key}\033[0m")
         print('-' * 40)
-        print(f"{'Time Year':^15} {'Sales Units':^16}")
+        print(f"{'Time Year':^15} {'Sales Units':^23}")
         print('-' * 40)
 
         for row in value:
-            print(f"{row[0][1]:^15} {row[1]:^15}")
+            print(f"{row[0][1]:^15} {row[1]:^23}")
+
+    print('\n')
 
 
 '''
@@ -189,27 +201,40 @@ Completed(2D)
 
 
 def country_time_quarter_time_year_query():
-    file_data = read_data('Car_Sales_Data_Set_Third_Sorting.csv')
+    file_data = read_data('Car_Sales_Data_Set_First_Sorting.csv')
     country_time_quarter_time_year_dict = {}
 
     for key, value in itertools.groupby(file_data[0], key=lambda x: (x[0], x[1], x[2])):
         country_time_quarter_time_year_dict[key] = sum(
             int(row[4]) for row in value)
 
-    sort_by_country = sorted(
-        country_time_quarter_time_year_dict.items(), key=lambda x: x[0][0])
+    transformed_list = list(country_time_quarter_time_year_dict.items())
 
-    for key, value in itertools.groupby(sort_by_country, key=lambda x: (x[0][0])):
+    for k, v in itertools.groupby(transformed_list, key=lambda x: (x[0][0])):
         print('\n')
-        print('-' * 40)
-        print(f"{key:^35}")
-        print('-' * 40)
-        print(f"{'Time Year-Time Quarter':^15} {'Sales Units':^16}")
-        print('-' * 40)
+        print('-' * 70)
+        print(f"\033[1m{'Country':>33} - {k}\033[0m")
+        print('-' * 70)
 
-        for row in value:
-            time_year_time_quarter = row[0][1] + "-" + row[0][2]
-            print(f"{time_year_time_quarter:^21} {row[1]:^17}")
+        temp_list = list(v)
+        sort_list = sorted(temp_list, key=lambda x: (x[0][1], x[0][2]))
+
+        splice_2017 = sort_list[:len(sort_list)//2]
+
+        splice_2018 = sort_list[len(sort_list)//2:]
+
+        print(
+            f"\x1B[3m{'Time_Year':>15} - {sort_list[0][0][1]} {'Time_Year':>31} - {sort_list[len(sort_list)//2][0][1]}\x1B[0m")
+        print('-' * 70)
+        print(
+            f"{'Time_Quarter':>15} {'Sales Units':>14}{'Time_Quarter':>25}{'Sales Units':>14}")
+        print('-' * 70)
+
+        for i in range(len(sort_list)//2):
+            print(
+                f"{splice_2017[i][0][2]:>8} {splice_2017[i][1]:>17} {splice_2018[i][0][2]:>21} {splice_2018[i][1]:>16}")
+
+    print('\n')
 
 
 '''
@@ -230,18 +255,18 @@ def country_car_manufacturer_query():
     sorted_by_country = sorted(
         country_car_manufacturer_dict.items(), key=lambda x: (x[0][0]))
 
-    print(sorted_by_country)
-
     for key, value in itertools.groupby(sorted_by_country, key=lambda x: (x[0][0])):
         print('\n')
         print('-' * 40)
-        print(f"{key:^35}")
+        print(f"\033[1m{'Country':>17} - {key}\033[0m")
         print('-' * 40)
-        print(f"{'Car Manufacturer':^15} {'Sales Units':^16}")
+        print(f"{'Car Manufacturer':^15} {'Sales Units':^25}")
         print('-' * 40)
 
         for row in value:
-            print(f"{row[0][1]:^15} {row[1]:^17}")
+            print(f"{row[0][1]:^15} {row[1]:^25}")
+
+    print('\n')
 
 
 '''
@@ -266,13 +291,15 @@ def time_year_car_manufacturer_query():
     for key, value in itertools.groupby(sorted_by_time_year, key=lambda x: (x[0][0])):
         print('\n')
         print('-' * 40)
-        print(f"{key:^35}")
+        print(f"\033[1m{'Time_Year':>20} - {key}\033[0m")
         print('-' * 40)
-        print(f"{'Car Manufacturer':^15} {'Sales Units':^16}")
+        print(f"{'Car Manufacturer':^15} {'Sales Units':^25}")
         print('-' * 40)
 
         for row in value:
-            print(f"{row[0][1]:^15} {row[1]:^17}")
+            print(f"{row[0][1]:^15} {row[1]:^25}")
+
+    print('\n')
 
 
 '''
@@ -297,16 +324,18 @@ def time_quarter_time_year_car_manufacturer_query():
     for key, value in itertools.groupby(sort_by_car_manufacturer, key=lambda x: (x[0][2])):
         print('\n')
         print('-' * 50)
-        print(f"{'Car Manufacturer':>27} - {key}")
+        print(f"\033[1m{'Car Manufacturer':>27} - {key}\033[0m")
         for k, v in itertools.groupby(value, key=lambda x: (x[0][0])):
             print('-' * 50)
-            print(f"{'Time_Year':>24} - {k}")
+            print(f"\x1B[3m{'Time_Year':>24} - {k}\x1B[0m")
             print('-' * 50)
-            print(f"{'Time_Quarter':^24}{'Sales_Units':^24}")
+            print(f"{'Time_Quarter':^24}{'Sales Units':^24}")
             print('-' * 50)
 
             for row in v:
                 print(f"{row[0][1]:^24}{row[1]:^24}")
+
+    print('\n')
 
 
 '''
@@ -329,21 +358,21 @@ def country_time_year_car_manufacturer_query():
     sort_dictionary_by_country_list = sorted(
         country_time_year_car_manufacturer_dict.items(), key=lambda x: (x[0][0]))
 
-    print(sort_dictionary_by_country_list)
-
     for key, value in itertools.groupby(sort_dictionary_by_country_list, key=lambda x: (x[0][0])):
         print('\n')
         print('-' * 60)
-        print(f"{key:^55}")
+        print(f"\033[1m {key:^55}\033[0m")
 
         for k, v in itertools.groupby(value, key=lambda x: (x[0][2])):
             print('-' * 60)
-            print(f"{k:^55}")
+            print(f"\x1B[3m{k:^55}\x1B[0m")
             print('-' * 60)
             print(f"{'Time_Year':^27} {'Sales Units':^27}")
             print('-' * 60)
             for row in v:
                 print(f"{row[0][1]:^27} {row[1]:^27}")
+
+    print('\n')
 
 
 '''
@@ -356,15 +385,8 @@ def country_time_quarter_time_year_car_manufacturer_query():
     file_data = read_data('Car_Sales_Data_Set_Second_Sorting.csv')
     country_time_quarter_time_year_car_manufacturer_dict = {}
 
-    sorting = sorted(file_data[0], key=lambda x: (x[1], x[2], x[3]))
-    # sort_by_car_manufacturer = sorted(
-    #     file_data[0], key=lambda x: (x[3]))
-
-    # sort_by_time_quarter = sorted(
-    #     sort_by_car_manufacturer, key=lambda x: (x[2]))
-
-    # for row in sorting:
-    #     print(row)
+    sort_by_car_manufacturer_time_quarter = sorted(
+        file_data[0], key=lambda x: (x[3], x[2]))
 
     for key, value in itertools.groupby(sort_by_car_manufacturer_time_quarter, key=lambda x: (x[0], x[1], x[2], x[3])):
         country_time_quarter_time_year_car_manufacturer_dict[key] = sum(
@@ -377,21 +399,29 @@ def country_time_quarter_time_year_car_manufacturer_query():
 
     for key, value in itertools.groupby(sorted_dictionary_by_country.items(), key=lambda x: (x[0][0])):
         print('\n\n')
-        print('-' * 60)
-        print(f"{key:^55}")
+        print('-' * 75)
+        print(f"\033[92m{key:>43}\033[0m")
         for k, v in itertools.groupby(value, key=lambda x: (x[0][3])):
-            print('\n')
-            print('-' * 60)
-            print(f"{k:^55}")
+            print('-' * 75)
+            print(f"\033[91m{k:>41}\033[0m")
 
-            for k1, v1 in itertools.groupby(v, key=lambda x: (x[0][1])):
-                print('-' * 60)
-                print(f"{'Time_Year': >29}-{k1}")
-                print('-' * 60)
-                print(f"{'Time_Quarter':^27} {'Sales Units':^27}")
-                print('-' * 60)
-                for row in v1:
-                    print(f"{row[0][2]:^27} {row[1]:^27}")
+            temp = list(v)
+            sort_by_year = sorted(temp, key=lambda x: (x[0][1]))
+            splice_2017 = sort_by_year[:4]
+            splice_2018 = sort_by_year[4:]
+
+            print('-' * 75)
+            print(
+                f"\033[93m{'Time_Year':>17} - {sort_by_year[0][0][1]} {'Time_Year':>33} - {sort_by_year[4][0][1]}\033[0m")
+            print('-' * 75)
+            print(
+                f"\033[95m{'Time_Quarter':>15}{'Sales Units':>19} {'Time_Quarter':>21}{'Sales Units':>19}\033[0m")
+            print('-' * 75)
+            for i in range(len(sort_by_year)//2):
+                print(
+                    f"\033[36m{splice_2017[i][0][2]:>10}{splice_2017[i][1]:>19}{splice_2018[i][0][2]:>21}{splice_2018[i][1]:>20}\033[0m")
+
+            print('\n')
 
 
 '''
