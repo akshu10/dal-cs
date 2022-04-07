@@ -1,4 +1,5 @@
 import csv
+from faulthandler import cancel_dump_traceback_later
 import itertools
 
 
@@ -90,28 +91,25 @@ def freq_sets(data):
     '''
     candidateDict = dict(first(data))
     g_dict = candidateDict
-    first_iteration = 1
+    k = 2
 
     while len(candidateDict) != 0:
         c = []
-        if first_iteration == 1:
-            first_iteration = 0
-            for item in candidateDict:
-                for item1 in candidateDict:
-                    if item1 > item:
-                        c.append((item, item1))
-        else:
-            for item1 in candidateDict:
-                for item2 in candidateDict:
-                    if (item2[-1] != item1[-1]) and (item1[:-1] == item2[:-1]):
-                        if item1[-1] > item2[-1]:
-                            c.append(item2 + (item1[-1],))
+        for i in candidateDict:
+            for j in candidateDict:
+                if k == 2:
+                    if j > i:
+                        c.append((i, j))
+                else:
+                    if (j[-1] != i[-1]) and (i[:-1] == j[:-1]):
+                        if j[-1] < i[-1]:
+                            c.append((j, i[-1]))
                         else:
-                            c.append(item1 + (item2[-1],))
+                            c.append((i, j[-1]))
 
         candidateDict = item_sets(c, data)
-
         g_dict.update(candidateDict)
+        k += 1
 
     out_buffer = []
     out_buffer.append('-' * 70 + '\n')
@@ -149,14 +147,17 @@ def freq_sets(data):
                             new_list.append(key)
                         sup = getSupport(new_list, data)
 
-                        out_buffer.append('Rule#' + str(rule_no) + ': ' + '{' + getOutputString(list(combination)) + '}'
-                                          + '=>' + '{' + getOutputString(list(key_list)) + '}' + '\n')
-                        out_buffer.append('(Support=' + str(round(sup, 2)) + ', ' +
-                                          'Confidence=' + str(round(c, 2)) + ')' + '\n')
-                        out_buffer.append('\n')
-                        write_data('Rules.txt', out_buffer)
-                        out_buffer.clear()
-                        rule_no += 1
+                        if sup >= min_sup:
+                            out_buffer.append('Rule#' + str(rule_no) + ': ' + '{' + getOutputString(list(combination)) + '}'
+                                              + '=>' + '{' + getOutputString(list(key_list)) + '}' + '\n')
+                            out_buffer.append('(Support=' + str(round(sup, 2)) + ', ' +
+                                              'Confidence=' + str(round(c, 2)) + ')' + '\n')
+                            out_buffer.append('\n')
+                            write_data('Rules.txt', out_buffer)
+                            out_buffer.clear()
+                            rule_no += 1
+                        else:
+                            continue
 
 
 def getSupport(items, data):
